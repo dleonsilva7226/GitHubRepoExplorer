@@ -36,18 +36,20 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction): vo
                 message: "Invalid token. Please log in again. Could not connect to the protected route."
             });
             return;
-        } else {
-            //adding a new parameter to the request object
-            res.status(200).json({
-                success: true,
-                message: "Token successfully verified",
-                user: {
-                    id: decoded.id,
-                    email: decoded.email
-                },
-                tokenExpiration: decoded.exp, // Token expiration time
-                accessTime: new Date().toLocaleString() // Time of access
-            })
         }
+
+        //adding a new parameter to the request object
+        req.user = {
+            success: true,
+            message: "Token successfully verified",
+            user: {
+                id: decoded.id,
+                email: decoded.email
+            },
+            tokenExpiration: decoded.exp, // Token expiration time
+            accessTime: new Date().toLocaleString() // Time of access
+        };
+
+        next();
     });
 }

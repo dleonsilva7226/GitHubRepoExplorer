@@ -1,3 +1,19 @@
+import { Request } from 'express';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {  // ? makes it optional
+        success: boolean;
+        message: string;
+        user: { id: string; email: string };
+        tokenExpiration: number;
+        accessTime: string;
+      };
+    }
+  }
+}
+
 export interface UserInfo {
     id: number;
     email: string;
@@ -37,15 +53,4 @@ export interface LoginResponse {
 export interface ErrorResponse {
     success: boolean;
     message: string;
-}
-
-export interface AuthenticatedRequestVerified {
-    success: boolean;
-    message: string;
-    user: {
-        id: number;
-        email: string;
-    };
-    tokenExpiration: number; // Token expiration time
-    accessTime: string; // Time of access
 }

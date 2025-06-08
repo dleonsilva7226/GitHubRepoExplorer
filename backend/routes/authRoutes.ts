@@ -23,6 +23,8 @@ authRouter.route('/login')
 
 // fix login route
 authRouter.route('/protect')
-    .get((req: Request, res: Response, next: NextFunction) => {
-        verifyToken(req, res, next);
+    .get(verifyToken, (req: Request, res: Response, next: NextFunction) => {
+        res.status(200).json(
+            req.user
+        );
     })

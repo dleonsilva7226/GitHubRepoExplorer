@@ -21,9 +21,15 @@ model User {
 }
 
 model FavoriteRepo {
-  id        Int    @id @default(autoincrement())
-  repoName  String
-  repoUrl   String
-  user      User   @relation(fields: [userId], references: [id])
-  userId    Int
+  id           Int    @id @default(autoincrement())
+  user         User   @relation(fields: [userId], references: [id])
+  userId       Int
+  githubRepoId Int
+  name         String
+  description  String? //could be null or empty if not provided
+  starCount    Int
+  language     String
+  repoUrl      String
+
+  @@unique([userId, githubRepoId])  // Prevents duplicate favorites per user
 }

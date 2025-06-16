@@ -6,7 +6,7 @@ declare global {
       user?: {  // ? makes it optional
         success: boolean;
         message: string;
-        user: { id: string; email: string };
+        user: { id: number; email: string };
         tokenExpiration: number;
         accessTime: string;
       };
@@ -53,4 +53,22 @@ export interface LoginResponse {
 export interface ErrorResponse {
     success: boolean;
     message: string;
+}
+
+export interface DeleteFavoriteRepoRequest {
+    githubRepoId: number;
+}
+
+export interface DeleteFavoriteRepoResponse {
+    success: boolean;
+    message: string;
+}
+
+export interface AddFavoriteRepoRequest {
+    githubRepoId: number,    // The GitHub repository's ID
+    name: string,           // Repository name
+    description: string,    // Optional description
+    starCount: number,      // Number of stars
+    language: string,       // Programming language
+    repoUrl: string        // URL to the repository
 }

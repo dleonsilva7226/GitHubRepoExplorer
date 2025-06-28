@@ -41,6 +41,7 @@ export const deleteUserFavRepo = async (req: Request, res: Response, next: NextF
         const deletedFavRepo = await prisma.favoriteRepo.delete(
             {
                 where: {
+                    userId: userId,
                     id: githubRepoId
                 }
             }

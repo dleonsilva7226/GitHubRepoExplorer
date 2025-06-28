@@ -4,7 +4,7 @@ import type { RepoListProps } from '../interfaces/ComponentTypes';
 
 const RepoList: React.FC<RepoListProps> = ({ repos, onSave, isAuthenticated }) => {
   return (
-    <div className="grid gap-6 mt-10">
+    <div className="grid gap-6 mt-10 w-full">
         {repos.map(repo => (
             <RepoCard
             key={repo.id}

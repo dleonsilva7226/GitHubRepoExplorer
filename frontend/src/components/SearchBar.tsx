@@ -1,5 +1,5 @@
 import React from 'react';
-import type { SearchBarProps } from '../interfaces/ComponentTypes';
+import type { SearchBarProps } from '../interfaces/componentTypes';
 
 const SearchBar: React.FC<SearchBarProps> = ({ username, setUsername, onSearch }) => {
   return (

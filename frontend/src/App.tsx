@@ -1,41 +1,52 @@
-import React from 'react';
-import SearchBar from './components/SearchBar';
-import RepoList from './components/RepoList';
-import Loading from './components/Loading';
-import ErrorMessage from './components/ErrorMessage';
+import React, { useEffect } from 'react';
+// import SearchReposPage from './pages/SearchReposPage';
+import { BrowserRouter, Routes, Route } from 'react-router';
+
 import './App.css'; // Ensure you have Tailwind CSS set up
-import useRepoStore from './store/repoStore';
+import ErrorPage from './pages/ErrorPage';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import FavoritesPage from './pages/FavoritesPage';
 import useAuthStore from './store/authStore';
 
-const HomePage: React.FC = () => {
-  const {username, repos, loading, error, handleFetchRepos, handleSaveRepo, setUsername} = useRepoStore();
-  const { isAuthenticated } = useAuthStore();
 
+const App: React.FC = () => {
+
+  const { updateLoginStatus, isAuthenticated }  = useAuthStore();
+
+  useEffect(() => {
+      //re-rendering every 15 seconds
+      let intervalId = setInterval(()=>{
+        console.log("Updating login status...");
+        console.log(isAuthenticated);
+        updateLoginStatus();
+      }, 15000);
+  
+      //cleanup function
+      const cleanup = () => {
+        clearInterval(intervalId);
+      }
+  
+      return cleanup;
+    }, []);
+
+  
   return (
-    <div className="bg-white/70 backdrop-blur-sm rounded-xl p-8 shadow-sm w-[650px]">  <div className="max-w-3xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900">GitHub Repo Explorer</h1>
-          <p className="text-sm text-gray-500 mt-2">Search repos by username and save your favorites</p>
-        </div>
 
-        {/* Search Bar */}
-        <SearchBar
-          username={username}
-          setUsername={setUsername}
-          onSearch={handleFetchRepos}
-        />
+  <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        {/* <Route path="/explore" element={<SearchReposPage/>} /> */}
+        <Route path="*" element={<ErrorPage />} />
+        <Route path ="/login" element={<LoginPage/>} />
+        <Route path ="/register" element={<RegisterPage/>} />
+        <Route path ="/favorites" element={<FavoritesPage />} />
+        {/* Add login, register routes, and explore routes, and also saved repos */}
+        
 
-        {/* Repo List */}
-        {loading && <Loading />}
-        {error && <ErrorMessage message={error} />}
-        {!loading && !error && repos.length > 0 && (
-          <div className="space-y-5">
-            <RepoList repos={repos} onSave={handleSaveRepo} isAuthenticated={isAuthenticated} />
-          </div>
-        )}
-      </div>
-    </div>
+      </Routes>
+    </BrowserRouter>
 
 
     
@@ -43,4 +54,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default App;

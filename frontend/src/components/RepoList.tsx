@@ -1,6 +1,6 @@
 import React from 'react';
 import RepoCard from './RepoCard';
-import type { RepoListProps } from '../interfaces/ComponentTypes';
+import type { RepoListProps } from '../interfaces/componentTypes';
 
 const RepoList: React.FC<RepoListProps> = ({ repos, onSave, isAuthenticated }) => {
   return (

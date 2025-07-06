@@ -77,7 +77,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction,
                     id: currentUser.id,
                     email: currentUser.email,
                 },
-                token: token //mock token here
+                token: token
             })
         } else {
             res.status(403).json({

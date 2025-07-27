@@ -56,7 +56,7 @@ export interface ErrorResponse {
 }
 
 export interface DeleteFavoriteRepoRequest {
-    githubRepoId: number;
+    id: number;
 }
 
 export interface DeleteFavoriteRepoResponse {

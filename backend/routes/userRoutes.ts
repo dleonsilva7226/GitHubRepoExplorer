@@ -11,16 +11,16 @@ export const userRouter: Router = express.Router();
 userRouter.use(verifyToken);
 
 // done - just test
-userRouter.route('favorites').get(async (req: Request, res: Response, next: NextFunction) => {
+userRouter.route('/favorites').get(async (req: Request, res: Response, next: NextFunction) => {
     await getUserFavRepoData(req, res, next, prisma);
 })
 
 // done - just test
-userRouter.route('favorites').post(async (req: Request, res: Response, next: NextFunction) => {
+userRouter.route('/favorites').post(async (req: Request, res: Response, next: NextFunction) => {
     await addUserFavRepo(req, res, next, prisma);
 })
 
 // done - just test
-userRouter.route('favorites/:id').delete(async (req: Request, res: Response, next: NextFunction) => {
+userRouter.route('/favorites/:id').delete(async (req: Request, res: Response, next: NextFunction) => {
     await deleteUserFavRepo(req, res, next, prisma);
 })

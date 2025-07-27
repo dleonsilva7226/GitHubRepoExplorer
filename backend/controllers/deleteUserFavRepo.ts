@@ -4,8 +4,8 @@ import { DeleteFavoriteRepoRequest, ErrorResponse } from "../interfaces/types";
 
 export const deleteUserFavRepo = async (req: Request, res: Response, next: NextFunction, prisma: PrismaClient): Promise<void> => {
     try {
-        const requestBody: DeleteFavoriteRepoRequest = req.body;
-        const { githubRepoId } = requestBody;
+        const githubRepoId: number | undefined = Number(req.params.id);
+        // const { id }: DeleteFavoriteRepoRequest = requestBody;
         const userId = req.user?.user.id; 
         
         //if id is not there

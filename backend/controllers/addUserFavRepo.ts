@@ -68,5 +68,6 @@ export const addUserFavRepo = async (req: Request, res: Response, next: NextFunc
             success: false,
             message: "Internal server error"
         });
+        return;
     }
 }

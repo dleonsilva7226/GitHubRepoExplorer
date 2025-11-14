@@ -13,8 +13,8 @@ app.use(express.json());
 
 //auth routes
 app.use('/auth', authRouter);
-//user routes
-app.use('/user', userRouter);
+//user routes - Note: frontend calls /favorite-repos, so we mount userRouter at root
+app.use('/', userRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is listening on http://localhost:${PORT}`);

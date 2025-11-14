@@ -7,7 +7,7 @@ import useRepoStore from '../store/repoStore';
 import useAuthStore from '../store/authStore';
 
 const SearchReposBar: React.FC = () => {
-  const { username, repos, loading, error, handleFetchRepos, handleSaveRepo, setUsername } = useRepoStore();
+  const { username, repos, loading, error, handleFetchRepos, handleAddRepo, setUsername } = useRepoStore();
   const { isAuthenticated } = useAuthStore();
 
   return (
@@ -32,7 +32,7 @@ const SearchReposBar: React.FC = () => {
         {error && <ErrorMessage message={error} />}
         {!loading && !error && repos.length > 0 && (
           <div className="space-y-5">
-            <RepoList repos={repos} onSave={handleSaveRepo} isAuthenticated={isAuthenticated} />
+            <RepoList repos={repos} onSave={handleAddRepo} isAuthenticated={isAuthenticated} />
           </div>
         )}
 

@@ -1,6 +1,5 @@
 import type React from "react";
 // import { useAuth } from "../contexts/authContext";
-import useAuthStore from "../store/authStore";
 
 const LoggedInHeader: React.FC = () => {
     // const { logout } = useAuthStore();

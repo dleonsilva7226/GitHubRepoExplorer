@@ -1,98 +1,97 @@
-import React, { useEffect, useState } from 'react';
-import type { Repo } from '../interfaces/componentTypes';
+import React, { useEffect } from 'react';
+import Navbar from '../components/Navbar';
 import RepoCard from '../components/RepoCard';
-import useUserStore from '../store/userStore';
-import LoggedInHeader from '../components/LoggedInHeader';
-
-// Dummy fetchFavorites function (replace with your real API call)
-const fetchFavorites = async (): Promise<Repo[]> => {
-    // Example: fetch from your backend API
-    // const response = await fetch('user/favorites');
-    // if (!response.ok) throw new Error('Failed to fetch favorites');
-    // return response.json();
-    return [
-        {
-            id: 1,
-            name: 'Example Repo 1',
-            description: 'This is an example repository.',
-            language: 'JavaScript',
-            repoUrl: 'https://github.com/dleonsilva7226/jobTrackerApp',
-            starCount: 42,
-        },
-        {
-            id: 2,
-            name: 'Example Repo 1',
-            description: 'This is an example repository.',
-            language: 'JavaScript',
-            repoUrl: 'https://github.com/dleonsilva7226/jobTrackerApp',
-            starCount: 42,
-        },
-        {
-            id: 3,
-            name: 'Example Repo 1',
-            description: 'This is an example repository.',
-            language: 'JavaScript',
-            repoUrl: 'https://github.com/dleonsilva7226/jobTrackerApp',
-            starCount: 42,
-        },
-        {
-            id: 4,
-            name: 'Example Repo 1',
-            description: 'This is an example repository.',
-            language: 'JavaScript',
-            repoUrl: 'https://github.com/dleonsilva7226/jobTrackerApp',
-            starCount: 42,
-        },
-    ];
-      
-};
+import Loading from '../components/Loading';
+import ErrorMessage from '../components/ErrorMessage';
+import EmptyState from '../components/EmptyState';
+import useRepoStore from '../store/repoStore';
+import useAuthStore from '../store/authStore';
 
 const FavoritesPage: React.FC = () => {
-  const [favorites, setFavorites] = useState<Repo[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
-  const { userEmail } = useUserStore();
+  const { 
+    handleFetchFavoriteRepos, 
+    handleDeleteRepo, 
+    error, 
+    loading, 
+    favorites 
+  } = useRepoStore();
   
+  const { isAuthenticated, logout } = useAuthStore();
 
+  // Load favorites when component mounts
   useEffect(() => {
-    const getFavorites = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const data = await fetchFavorites();
-        setFavorites(data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load favorites.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    getFavorites();
-  }, []);
+    if (isAuthenticated) {
+      handleFetchFavoriteRepos().catch((error) => {
+        console.error('Error loading favorites:', error);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]); // handleFetchFavoriteRepos is stable from the store
+
+  const handleRemoveFavorite = async (repoId: number) => {
+    try {
+      await handleDeleteRepo(repoId);
+      // Refresh favorites after deletion
+      await handleFetchFavoriteRepos();
+    } catch (error) {
+      console.error('Error removing favorite:', error);
+    }
+  };
 
   return (
-    <>
-    <LoggedInHeader />
-    <div className="min-h-screen bg-zinc-900 text-white flex flex-col items-center py-10">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+      <Navbar isAuthenticated={isAuthenticated} onLogout={logout} />
+      
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            My Favorite Repositories
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            {favorites.length > 0 
+              ? `You have ${favorites.length} favorite ${favorites.length === 1 ? 'repository' : 'repositories'}`
+              : 'Star some repositories to see them here'
+            }
+          </p>
+        </div>
 
-      <h1 className="text-4xl font-bold mb-8"> {userEmail || "Unknown User's"}  Favorite Repositories</h1>
-      {loading && <div className="text-lg">Loading...</div>}
-      {error && <div className="text-red-400 mb-4">{error}</div>}
-      <div className="w-full max-w-3xl flex flex-col gap-6">
-        {favorites.length === 0 && !loading && !error && (
-          <div className="text-center text-gray-400">No favorites yet.</div>
+        {/* Loading State */}
+        {loading && <Loading />}
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 mb-6">
+            <ErrorMessage message={error} />
+          </div>
         )}
-        {favorites.map((repo) => (
-          <RepoCard
-            key={repo.id}
-            repo={repo}
-            isAuthenticated={true}
-            onSave={() => {}} // Optionally implement remove from favorites
-          />
-        ))}
-      </div>
+
+        {/* Favorites List */}
+        {!loading && !error && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+            {favorites.length === 0 ? (
+              <EmptyState
+                title="No favorites yet"
+                message="Star some repositories from the home page to see them here."
+                icon="⭐"
+              />
+            ) : (
+              <div className="grid gap-6">
+                {favorites.map((repo) => (
+                  <RepoCard
+                    key={repo.id}
+                    repo={repo}
+                    onSave={() => handleRemoveFavorite(repo.id)}
+                    isAuthenticated={isAuthenticated}
+                    isFavorite={true}
+                    onToggleFavorite={() => handleRemoveFavorite(repo.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </main>
     </div>
-    </>
   );
 };
 

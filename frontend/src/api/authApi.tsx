@@ -1,11 +1,10 @@
-import type { AuthApiResponse, UserVerifySuccessResponse, UserVerifyFailResponse } from "../interfaces/componentTypes";
-import useAuthStore from "../store/authStore";
+import type { AuthApiResponse } from "../interfaces/ComponentTypes";
 
 //registers a new user by sending a POST request to the server with the user's details
 const authenticationApi = (): AuthApiResponse => {
     const endpointPrefix: string = "http://localhost:8000";
 
-    const registerUser = async (email: string, password: string): Promise<void> => {
+    const registerUser = async (email: string, password: string): Promise<boolean | undefined> => {
         const response = await fetch(`${endpointPrefix}/auth/register`, {
             method: 'POST',
             headers: {
@@ -29,10 +28,11 @@ const authenticationApi = (): AuthApiResponse => {
         
         localStorage.setItem("token", data.token); // Store the token if needed
         console.log('Registration successful:', data);
+        return true;
     }
 
     //logs in a user by sending a POST request to the server with the user's credentials
-    const loginUser = async (email: string, password: string): Promise<boolean> => {
+    const loginUser = async (email: string, password: string): Promise<boolean | undefined> => {
         const response = await fetch(`${endpointPrefix}/auth/login`, {
             method: 'POST',
             headers: {
@@ -56,33 +56,11 @@ const authenticationApi = (): AuthApiResponse => {
         localStorage.setItem("token", data.token);
         console.log("success");
 
-
         console.log('Login successful:', data);
         return true;
     }
 
-    const verifyUser = async (token: string): Promise<UserVerifySuccessResponse | UserVerifyFailResponse> => {
-        const response = await fetch (`${endpointPrefix}/auth/protect`, {
-            method: "GET",
-            headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            console.error('Token verification failed.');
-            return {
-                success: false,
-                message: "token verification failed"
-            }
-        }
-        const data: UserVerifySuccessResponse | UserVerifyFailResponse = await response.json();
-        return data;
-    }
-
     return {
-        verifyUser,
         registerUser,
         loginUser,
     };

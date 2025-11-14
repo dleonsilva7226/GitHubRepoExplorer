@@ -18,6 +18,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* Enable dark mode class toggle */
+.light {
+  color-scheme: light;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -29,8 +41,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }

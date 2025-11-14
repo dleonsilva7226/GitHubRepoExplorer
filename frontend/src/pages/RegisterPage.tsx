@@ -9,13 +9,13 @@ const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    await registerUser(currEmail, currPassword);
-    const token: string | null = localStorage.getItem("token");
-    if (token === null) {
+    const response = await registerUser(currEmail, currPassword);
+    if (response == undefined || !response) {
       alert("Unable to log in");
       return;
     }
     alert("Registration successful! Your account has been created.");
+    navigate("/login");
   }
 
   return (

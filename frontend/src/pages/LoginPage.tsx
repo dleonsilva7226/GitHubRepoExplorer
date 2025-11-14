@@ -1,93 +1,27 @@
 // LoginPage.tsx
-import React, { useState, useEffect } from "react";
-import authenticationApi from "../api/authApi";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import useUserStore from "../store/userStore";
 import useAuthStore from "../store/authStore";
 
 const LoginPage: React.FC = () => {
-  const { loginUser } = authenticationApi();
-  const { setIsAuthenticated, isAuthenticated } = useAuthStore();
-  const { setUserEmail } = useUserStore();
+  const { updateLoginStatus } = useAuthStore();
   const [currEmail, setCurrEmail] = useState<string>("");
   const [currPassword, setCurrPassword] = useState<string>("");
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   //re-rendering every 15 seconds
-  //   let intervalId = setInterval(()=>{
-  //     console.log("Updating login status...");
-  //     updateLoginStatus();
-  //   }, 15000);
-
-  //   //cleanup function
-  //   const cleanup = () => {
-  //     clearInterval(intervalId);
-  //   }
-
-  //   return cleanup;
-  // }, []);
-
-  // useEffect(() => {
-  //   let intervalId = setInterval(()=>{
-  //     console.log("Updating login status...");
-  //     handleLogin();
-  //   }, 10000);
-
-  //   //cleanup function
-  //   const cleanup = () => {
-  //     clearInterval(intervalId);
-  //   }
-
-  //   return cleanup;
-  // })
-
-  // const handleLogin = () => {
-  //   if (!isAuthenticated) {
-  //     logout();
-  //     return;
-  //   }
-  //   loginUser(currEmail, currPassword);
-  //   navigate("/favorites");
-  // }
-
-  // const logout = (): void => {
-  //       // Clear the token from local storage or any other storage mechanism you use
-  //       localStorage.removeItem("token");
-  //       if (!localStorage.getItem("token")) {
-  //           console.log('Token removed from local storage.');
-  //       }
-  //       else {
-  //           throw new Error('Logout failed. Token not removed.');
-  //       }
-  //       console.log('User logged out successfully.');
-  //   }
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   const success: boolean = await loginUser(currEmail, currPassword);
-  //   if (success) {
-  //     setIsAuthenticated(true);
-  //     navigate("/favorites");
-  //   } else {
-  //     alert("Unable to log in");
-  //   }
-  // }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const success = await loginUser(currEmail, currPassword);
-      if (success) {
-        setIsAuthenticated(true);
-        console.log("Value right when loggin in:" + isAuthenticated)
-        setUserEmail(currEmail);
-
-        navigate("/favorites");
+      const response = await updateLoginStatus(currEmail, currPassword);
+      if (response) {
+        // Navigate to home page instead of favorites to see the full UI
+        navigate("/");
       } else {
         alert("Unable to log in");
       }
-    } catch (err: any) {
-      alert(err.message || "Unable to log in");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Unable to log in";
+      alert(errorMessage);
     }
   };
 

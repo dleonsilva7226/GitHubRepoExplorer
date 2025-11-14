@@ -1,5 +1,5 @@
 import React from 'react';
-import type { SaveButtonProps } from '../interfaces/componentTypes';
+import type { SaveButtonProps } from '../interfaces/ComponentTypes';
 
 const SaveButton: React.FC<SaveButtonProps> = ({ onClick, isSaved }) => {
   return (

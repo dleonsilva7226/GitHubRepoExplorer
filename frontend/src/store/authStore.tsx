@@ -1,34 +1,40 @@
-import { useState } from 'react';
-import type { AuthStore, UserVerifySuccessResponse, UserVerifyFailResponse } from '../interfaces/componentTypes';
+import { useState, useEffect } from 'react';
+import type { AuthStore } from '../interfaces/ComponentTypes';
 import authenticationApi from '../api/authApi';
 
 const useAuthStore = (): AuthStore => {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const { verifyUser } = authenticationApi();
-    // This effect runs once when the component mounts to check the initial authentication status
-    // and sets up an interval to periodically check the authentication status.
-    const updateLoginStatus = async (): Promise<void> => {
-      const token: string | null = localStorage.getItem("token");
-      
-      if (token === null) {
-        console.log("No token found in localStorage.");
-        setIsAuthenticated(false);
-        return;
-      }
+    // Check if token exists in localStorage on mount
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+        return !!localStorage.getItem('token');
+    });
+    const { loginUser, registerUser } = authenticationApi();
 
-      try {
-        const result: UserVerifySuccessResponse | UserVerifyFailResponse = await verifyUser(token);
-        console.log("Login status");
-        if (result.success === true) {
-          console.log("Logging in here")
-          setIsAuthenticated(true);
-        } else {
-          console.log("Loggin out here");
-          logout();
-        }
-      } catch (err) {
-        logout();
+    // Check authentication status on mount
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setIsAuthenticated(!!token);
+    }, []);
+
+    const registerNewUser = async (userEmail: string, password: string): Promise<boolean> => {
+      console.log("Registering user here");
+      const response = await registerUser(userEmail, password);
+      if (!response) {
+        return false;
       }
+      console.log("Registration successful, setting token in local storage");
+      setIsAuthenticated(true); // Set authenticated state after registration
+      return true;
+    }
+
+    const updateLoginStatus = async (userEmail: string, password: string): Promise<boolean> => {
+      console.log("Logging in here")
+      const response = await loginUser(userEmail, password);
+      if (!response) {
+        return false;
+      }
+      console.log("Login successful, setting token in local storage");
+      setIsAuthenticated(true);     
+      return true;   
     }
 
     const logout = () => {
@@ -46,6 +52,8 @@ const useAuthStore = (): AuthStore => {
     return {
         updateLoginStatus,
         isAuthenticated,
+        registerNewUser,
+        logout,
         setIsAuthenticated
     };
 }
